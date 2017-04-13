@@ -82,7 +82,7 @@ def softmax_loss_vectorized(W, X, y, reg):
     return loss, dW
 
 
-def softmax(Z):
-    Z_max = np.max(Z, axis=1, keepdims=True)
-    exp_Z = np.exp(Z - Z_max)
-    return exp_Z / np.sum(exp_Z, axis=1, keepdims=True)
+def softmax(input):
+    input_max = np.max(input, axis=1, keepdims=True)
+    exp_input = np.exp(input - input_max)
+    return exp_input / np.sum(exp_input, axis=1, keepdims=True)
