@@ -192,10 +192,10 @@ class FullyConnectedNet(object):
                 self.params['b1'] = np.zeros(hidden_dims[0])
             elif i < self.num_layers:
                 self.params['W%' % i] = weight_scale * np.random.randn(hidden_dims[i - 2], hidden_dims[i - 1])
-                self.params['W%' % i] = np.zeros(hidden_dims[i - 1])
+                self.params['b%' % i] = np.zeros(hidden_dims[i - 1])
             elif i == self.num_layers:
                 self.params['W%' % i] = weight_scale * np.random.randn(hidden_dims[i - 2], num_classes)
-                self.params['W%' % i] = np.zeros(num_classes)
+                self.params['b%' % i] = np.zeros(num_classes)
                 break
             if use_batchnorm:  # (L - 1) x batch normalization
                 self.params['gamma' + str(i)] = np.ones_like(self.params['b' + str(i)])
