@@ -1,1 +1,1 @@
-# cs231n 2016
+# cs231n assignment 2016
