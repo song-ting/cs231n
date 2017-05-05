@@ -32,16 +32,16 @@ def softmax_loss_naive(W, X, y, reg):
     # regularization!                                                           #
     #############################################################################
     N = X.shape[0]
-    class_input = X.dot(W)  # shape (N, C)
-    class_prob = softmax(class_input)  # shape (N, C)
-    data_loss = np.sum(-np.log(class_prob[np.arange(N), y])) / N
+    scores = X.dot(W)  # shape (N, C)
+    probs = softmax(scores)  # shape (N, C)
+    data_loss = np.sum(-np.log(probs[np.arange(N), y])) / N
     reg_loss = 0.5 * reg * np.sum(W ** 2)
     loss = data_loss + reg_loss
 
-    dclass_input = class_prob.copy()  # shape (N, C)
-    dclass_input[np.arange(N), y] -= 1.0
-    dclass_input /= N
-    dW = X.T.dot(dclass_input) + reg * W  # shape (D, C)
+    dscores = probs.copy()  # shape (N, C)
+    dscores[np.arange(N), y] -= 1.0
+    dscores /= N
+    dW = X.T.dot(dscores) + reg * W  # shape (D, C)
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
@@ -65,16 +65,16 @@ def softmax_loss_vectorized(W, X, y, reg):
     # regularization!                                                           #
     #############################################################################
     N = X.shape[0]
-    class_input = X.dot(W)  # shape (N, C)
-    class_prob = softmax(class_input)  # shape (N, C)
-    data_loss = np.sum(-np.log(class_prob[np.arange(N), y])) / N
+    scores = X.dot(W)  # shape (N, C)
+    probs = softmax(scores)  # shape (N, C)
+    data_loss = np.sum(-np.log(probs[np.arange(N), y])) / N
     reg_loss = 0.5 * reg * np.sum(W ** 2)
     loss = data_loss + reg_loss
 
-    dclass_input = class_prob.copy()  # shape (N, C)
-    dclass_input[np.arange(N), y] -= 1.0
-    dclass_input /= N
-    dW = X.T.dot(dclass_input) + reg * W  # shape (D, C)
+    dscores = probs.copy()  # shape (N, C)
+    dscores[np.arange(N), y] -= 1.0
+    dscores /= N
+    dW = X.T.dot(dscores) + reg * W  # shape (D, C)
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
@@ -82,7 +82,7 @@ def softmax_loss_vectorized(W, X, y, reg):
     return loss, dW
 
 
-def softmax(class_input):
-    input_max = np.max(class_input, axis=1, keepdims=True)
-    exp_input = np.exp(class_input - input_max)
-    return exp_input / np.sum(exp_input, axis=1, keepdims=True)
+def softmax(scores):
+    scores_max = np.max(scores, axis=1, keepdims=True)
+    exp_scores = np.exp(scores - scores_max)
+    return exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
