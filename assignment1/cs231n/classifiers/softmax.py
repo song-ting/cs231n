@@ -41,7 +41,7 @@ def softmax_loss_naive(W, X, y, reg):
     dscores = probs.copy()  # shape (N, C)
     dscores[np.arange(N), y] -= 1.0
     dscores /= N
-    dW = X.T.dot(dscores) + reg * W  # shape (D, C)
+    dW = np.dot(X.T, dscores) + reg * W  # shape (D, C)
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
@@ -74,7 +74,7 @@ def softmax_loss_vectorized(W, X, y, reg):
     dscores = probs.copy()  # shape (N, C)
     dscores[np.arange(N), y] -= 1.0
     dscores /= N
-    dW = X.T.dot(dscores) + reg * W  # shape (D, C)
+    dW = np.dot(X.T, dscores) + reg * W  # shape (D, C)
     #############################################################################
     #                          END OF YOUR CODE                                 #
     #############################################################################
