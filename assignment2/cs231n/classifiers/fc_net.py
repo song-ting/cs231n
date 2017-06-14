@@ -10,13 +10,10 @@ class TwoLayerNet(object):
     A two-layer fully-connected neural network with ReLU nonlinearity and
     softmax loss that uses a modular layer design. We assume an input dimension
     of D, a hidden dimension of H, and perform classification over C classes.
-
     The architecure should be affine - relu - affine - softmax.
-
     Note that this class does not implement gradient descent; instead, it
     will interact with a separate Solver object that is responsible for running
     optimization.
-
     The learnable parameters of the model are stored in the dictionary
     self.params that maps parameter names to numpy arrays.
     """
@@ -25,7 +22,6 @@ class TwoLayerNet(object):
                  weight_scale=1e-3, reg=0.0):
         """
         Initialize a new network.
-
         Inputs:
         - input_dim: An integer giving the size of the input
         - hidden_dim: An integer giving the size of the hidden layer
@@ -57,16 +53,13 @@ class TwoLayerNet(object):
     def loss(self, X, y=None):
         """
         Compute loss and gradient for a minibatch of data.
-
         Inputs:
         - X: Array of input data of shape (N, d_1, ..., d_k)
         - y: Array of labels, of shape (N,). y[i] gives the label for X[i].
-
         Returns:
         If y is None, then run a test-time forward pass of the model and return:
         - scores: Array of shape (N, C) giving classification scores, where
           scores[i, c] is the classification score for X[i] and class c.
-
         If y is not None, then run a training-time forward and backward pass and
         return a tuple of:
         - loss: Scalar value giving the loss
@@ -134,12 +127,9 @@ class FullyConnectedNet(object):
     ReLU nonlinearities, and a softmax loss function. This will also implement
     dropout and batch normalization as options. For a network with L layers,
     the architecture will be
-
     {affine - [batch norm] - relu - [dropout]} x (L - 1) - affine - softmax
-
     where batch normalization and dropout are optional, and the {...} block is
     repeated L - 1 times.
-
     Similar to the TwoLayerNet above, learnable parameters are stored in the
     self.params dictionary and will be learned using the Solver class.
     """
@@ -149,7 +139,6 @@ class FullyConnectedNet(object):
                  weight_scale=1e-2, dtype=np.float32, seed=None):
         """
         Initialize a new FullyConnectedNet.
-
         Inputs:
         - hidden_dims: A list of integers giving the size of each hidden layer.
         - input_dim: An integer giving the size of the input.
@@ -191,11 +180,11 @@ class FullyConnectedNet(object):
                 self.params['W1'] = weight_scale * np.random.randn(input_dim, hidden_dims[0])
                 self.params['b1'] = np.zeros(hidden_dims[0])
             elif i < self.num_layers:
-                self.params['W%' % i] = weight_scale * np.random.randn(hidden_dims[i - 2], hidden_dims[i - 1])
-                self.params['b%' % i] = np.zeros(hidden_dims[i - 1])
+                self.params['W' + str(i)] = weight_scale * np.random.randn(hidden_dims[i - 2], hidden_dims[i - 1])
+                self.params['b' + str(i)] = np.zeros(hidden_dims[i - 1])
             elif i == self.num_layers:
-                self.params['W%' % i] = weight_scale * np.random.randn(hidden_dims[i - 2], num_classes)
-                self.params['b%' % i] = np.zeros(num_classes)
+                self.params['W' + str(i)] = weight_scale * np.random.randn(hidden_dims[i - 2], num_classes)
+                self.params['b' + str(i)] = np.zeros(num_classes)
                 break
             if use_batchnorm:  # (L - 1) x batch normalization
                 self.params['gamma' + str(i)] = np.ones_like(self.params['b' + str(i)])
@@ -229,7 +218,6 @@ class FullyConnectedNet(object):
     def loss(self, X, y=None):
         """
         Compute loss and gradient for the fully-connected net.
-
         Input / output: Same as TwoLayerNet above.
         """
         X = X.astype(self.dtype)
@@ -262,17 +250,17 @@ class FullyConnectedNet(object):
         for i in xrange(1, num_layers + 1):
             if i < num_layers:  # {affine - [batch norm] - relu - [dropout]} x (L - 1)
                 if not self.use_batchnorm and not self.use_dropout:  # affine - relu
-                    out, fc_relu_cache = affine_relu_forward(out, self.params['W%' % i], self.params['b' + str(i)])
+                    out, fc_relu_cache = affine_relu_forward(out, self.params['W' + str(i)], self.params['b' + str(i)])
                     layer_caches.append(fc_relu_cache)
                 elif self.use_batchnorm:  # affine - [batch norm] - relu
-                    out, fc_bn_relu_cache = affine_batchnorm_relu_forward(out, self.params['W%' % i],
+                    out, fc_bn_relu_cache = affine_batchnorm_relu_forward(out, self.params['W' + str(i)],
                                                                           self.params['b' + str(i)],
                                                                           self.params['gamma' + str(i)],
                                                                           self.params['beta' + str(i)],
                                                                           self.bn_params[i - 1])
                     layer_caches.append(fc_bn_relu_cache)
                 elif self.use_dropout:  # affine - relu - [dropout]
-                    out, fc_relu_dropout_cache = affine_relu_dropout_forward(out, self.params['W%' % i],
+                    out, fc_relu_dropout_cache = affine_relu_dropout_forward(out, self.params['W' + str(i)],
                                                                              self.params['b' + str(i)],
                                                                              self.dropout_param)
                     layer_caches.append(fc_relu_dropout_cache)
@@ -280,7 +268,7 @@ class FullyConnectedNet(object):
                     pass
 
             else:  # output layer: affine
-                scores, fc_cache = affine_forward(out, self.params['W%' % i], self.params['b' + str(i)])
+                scores, fc_cache = affine_forward(out, self.params['W' + str(i)], self.params['b' + str(i)])
                 layer_caches.append(fc_cache)
 
         ############################################################################
@@ -309,22 +297,22 @@ class FullyConnectedNet(object):
         for i in xrange(num_layers, 0, -1):
             if i == num_layers:  # output layer: affine - softmax
                 loss, dscores = softmax_loss(scores, y)
-                dout, grads['W%' % i], grads['b' + str(i)] = affine_backward(dscores, layer_caches[i - 1])
+                dout, grads['W' + str(i)], grads['b' + str(i)] = affine_backward(dscores, layer_caches[i - 1])
 
             else:  # {affine - [batch norm] - relu - [dropout]} x (L - 1)
                 if not self.use_batchnorm and not self.use_dropout:  # affine - relu
-                    dout, grads['W%' % i], grads['b' + str(i)] = affine_relu_backward(dout, layer_caches[i - 1])
+                    dout, grads['W' + str(i)], grads['b' + str(i)] = affine_relu_backward(dout, layer_caches[i - 1])
                 elif self.use_batchnorm:  # affine - [batch norm] - relu
-                    dout, grads['W%' % i], grads['b' + str(i)], grads['gamma' + str(i)], grads['beta' + str(i)] = \
+                    dout, grads['W' + str(i)], grads['b' + str(i)], grads['gamma' + str(i)], grads['beta' + str(i)] = \
                         affine_batchnorm_relu_backward(dout, layer_caches[i - 1])
                 elif self.use_dropout:  # affine - relu - [dropout]
-                    dout, grads['W%' % i], grads['b' + str(i)] = affine_relu_dropout_backward(dout,
+                    dout, grads['W' + str(i)], grads['b' + str(i)] = affine_relu_dropout_backward(dout,
                                                                                                   layer_caches[i - 1])
                 else:  # affine - [batch norm] - relu - [dropout]
                     pass
 
-            loss += 0.5 * self.reg * np.sum(self.params['W%' % i] ** 2)
-            grads['W%' % i] += self.reg * self.params['W%' % i]
+            loss += 0.5 * self.reg * np.sum(self.params['W' + str(i)] ** 2)
+            grads['W' + str(i)] += self.reg * self.params['W' + str(i)]
 
         ############################################################################
         #                             END OF YOUR CODE                             #
